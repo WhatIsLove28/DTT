@@ -1,5 +1,5 @@
 import { buildBackup, type BackupFile } from '../domain/backup'
-import { db } from './db'
+import { CORE_TABLES, db } from './db'
 import { metaRepo } from './repositories'
 import { runSync } from './sync'
 
@@ -13,7 +13,12 @@ export async function exportBackup(): Promise<BackupFile> {
     db.tasks.toArray(),
     db.meta.toArray(),
   ])
-  return buildBackup({ categories, goals, series, tasks, meta })
+  const core: readonly string[] = CORE_TABLES
+  const modules: BackupFile['modules'] = {}
+  for (const table of db.tables) {
+    if (!core.includes(table.name)) modules[table.name] = await table.toArray()
+  }
+  return buildBackup({ categories, goals, series, tasks, meta, modules })
 }
 
 export async function markBackupDone(): Promise<void> {
@@ -29,6 +34,12 @@ export async function importBackup(file: BackupFile): Promise<void> {
     await db.series.bulkAdd(file.series)
     await db.tasks.bulkAdd(file.tasks)
     await db.meta.bulkAdd(file.meta)
+    // Таблицы модулей; раздел из более новой версии с незнакомой таблицей пропускается.
+    const core: readonly string[] = CORE_TABLES
+    for (const table of db.tables) {
+      const rows = file.modules[table.name]
+      if (rows && !core.includes(table.name)) await table.bulkAdd(rows)
+    }
     await metaRepo.set('initialized', true)
   })
   await runSync()

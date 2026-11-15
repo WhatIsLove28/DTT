@@ -62,6 +62,52 @@ export function RepeatIcon() {
   )
 }
 
+export function CartIcon() {
+  return (
+    <svg {...base}>
+      <path d="M3 4h2.2l2.3 11h10.2l2-8H6.3" />
+      <circle cx="9" cy="19" r="1.4" />
+      <circle cx="17" cy="19" r="1.4" />
+    </svg>
+  )
+}
+
+export function WalletIcon() {
+  return (
+    <svg {...base}>
+      <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H17v3" />
+      <rect x="4" y="8" width="16.5" height="11.5" rx="2.5" />
+      <path d="M16 13.7h1.5" />
+    </svg>
+  )
+}
+
+export function ArrowUpIcon() {
+  return (
+    <svg {...base}>
+      <path d="M12 19V6M6.5 11.5L12 6l5.5 5.5" />
+    </svg>
+  )
+}
+
+export function BarbellIcon() {
+  return (
+    <svg {...base}>
+      <path d="M7.5 12h9M4.5 8.5v7M7.5 6.5v11M16.5 6.5v11M19.5 8.5v7M2.5 12h2M19.5 12h2" />
+    </svg>
+  )
+}
+
+export function DotsIcon() {
+  return (
+    <svg {...base} fill="currentColor" stroke="none">
+      <circle cx="5.5" cy="12" r="1.7" />
+      <circle cx="12" cy="12" r="1.7" />
+      <circle cx="18.5" cy="12" r="1.7" />
+    </svg>
+  )
+}
+
 export function CloseIcon() {
   return (
     <svg {...base}>

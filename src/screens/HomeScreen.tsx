@@ -14,6 +14,7 @@ import { nextTaskStatus } from '../domain/statusView'
 import { getTodayList } from '../domain/today'
 import type { Task } from '../domain/types'
 import { formatDate, t } from '../i18n'
+import { ModuleTiles } from '../modules/ModuleTiles'
 import { useUiStore } from '../store/uiStore'
 
 function SectionHeader({ title, addLabel, onAdd }: { title: string; addLabel: string; onAdd: () => void }) {
@@ -174,6 +175,8 @@ export function HomeScreen({ data }: { data: AppData | undefined }) {
               ))}
             </div>
           )}
+
+          <ModuleTiles />
         </div>
       )}
     </div>

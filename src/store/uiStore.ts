@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { applyTheme, loadTheme, saveTheme, type Theme } from '../app/theme'
 import { toISODate } from '../domain/dates'
 import type { ISODate, Task, WeeklyGoal } from '../domain/types'
+import type { ModuleId } from '../modules/settings'
 import { loadLangSetting, resolveLang, saveLangSetting, setLang, type Lang, type LangSetting } from '../i18n'
 
 export type Sheet =
@@ -22,6 +23,12 @@ interface UiState {
   /** 0 — главный экран, 1 — экран недели */
   screenIndex: number
   settingsOpen: boolean
+  /** Модуль, открытый на весь экран */
+  moduleOpen: ModuleId | null
+  /** С чем открыть модуль: например 'add' — сразу с окном добавления */
+  moduleIntent: string | undefined
+  openModule: (id: ModuleId, intent?: string) => void
+  closeModule: () => void
   /** Текущий день; обновляется при смене суток и возврате в приложение */
   today: ISODate
   viewMode: WeekViewMode
@@ -70,6 +77,10 @@ export const useUiStore = create<UiState>((set) => ({
   setScreenIndex: (screenIndex) => set({ screenIndex }),
   openSettings: () => set({ settingsOpen: true }),
   closeSettings: () => set({ settingsOpen: false }),
+  moduleOpen: null,
+  moduleIntent: undefined,
+  openModule: (moduleOpen, moduleIntent) => set({ moduleOpen, moduleIntent }),
+  closeModule: () => set({ moduleOpen: null, moduleIntent: undefined }),
   setToday: (today) =>
     // Если смотрели «сегодня», после полуночи остаёмся на сегодняшнем дне.
     set((s) => ({ today, selectedDate: s.selectedDate === s.today ? today : s.selectedDate })),

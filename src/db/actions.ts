@@ -2,6 +2,7 @@
 import { format } from 'date-fns'
 import { addDaysISO, toISODate, weekStartOf } from '../domain/dates'
 import { newId } from '../domain/ids'
+import { taskToCredit } from '../domain/goalCredit'
 import { isOpen } from '../domain/overdue'
 import { t } from '../i18n'
 import type { Category, ISODate, Recurrence, Task, TaskSeries, TimeOfDay, WeeklyGoal } from '../domain/types'
@@ -300,6 +301,28 @@ export async function setTaskStatus(task: Task, status: Exclude<Task['status'], 
 /** Выполнение засчитывается по фактическому моменту отметки */
 export async function completeTask(task: Task, actualDurationMin: number): Promise<void> {
   await tasksRepo.put({ ...task, status: 'done', completedAt: nowStamp(), actualDurationMin })
+}
+
+/**
+ * Засчитывает в цель активность из модуля (например, завершённую тренировку): отмечает выполненной
+ * сегодняшнюю задачу цели, а если её нет — создаёт привязанную выполненную задачу.
+ * Возвращает false, если зачёт не сделан: цели нет, она не действует или сегодня зачёт уже был.
+ */
+export async function creditGoal(
+  goalId: string,
+  title: string,
+  durationMin: number,
+  today: ISODate = todayISO(),
+): Promise<boolean> {
+  return tx(async () => {
+    const goal = await goalsRepo.get(goalId)
+    if (!goal) return false
+    const [goals, series, tasks] = await Promise.all([goalsRepo.list(), seriesRepo.list(), tasksRepo.list()])
+    const task = taskToCredit(goal, today, { goals, series, tasks }, title, durationMin, newId())
+    if (!task) return false
+    await tasksRepo.put({ ...task, status: 'done', completedAt: nowStamp(), actualDurationMin: durationMin })
+    return true
+  })
 }
 
 export type DeleteScope = 'one' | 'following'

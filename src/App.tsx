@@ -4,6 +4,7 @@ import { UpdateBanner } from './app/UpdateBanner'
 import { useAppData } from './db/hooks'
 import { runSync } from './db/sync'
 import { toISODate } from './domain/dates'
+import { moduleById } from './modules/registry'
 import { SettingsScreen } from './screens/SettingsScreen'
 import { Sheets } from './sheets/Sheets'
 import { useUiStore } from './store/uiStore'
@@ -34,11 +35,16 @@ export function App() {
   const settingsOpen = useUiStore((s) => s.settingsOpen)
   // Подписка на язык: при его смене перерисовывается всё дерево и тексты берутся из нового словаря.
   useUiStore((s) => s.lang)
+  const moduleOpen = useUiStore((s) => s.moduleOpen)
+  const moduleIntent = useUiStore((s) => s.moduleIntent)
+  const closeModule = useUiStore((s) => s.closeModule)
+  const ModuleScreen = moduleOpen ? moduleById(moduleOpen)?.Screen : undefined
   const data = useAppData()
   useDayWatcher()
   return (
     <>
       <AppShell data={data} />
+      {ModuleScreen && <ModuleScreen onClose={closeModule} intent={moduleIntent} />}
       {settingsOpen && <SettingsScreen data={data} />}
       {data && <Sheets data={data} />}
       <UpdateBanner />

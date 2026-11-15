@@ -3,7 +3,7 @@ import { daysBetween, toISODate } from './dates'
 import type { Category, MetaEntry, Task, TaskSeries, WeeklyGoal } from './types'
 
 export const BACKUP_APP = 'tracker'
-export const BACKUP_VERSION = 1
+export const BACKUP_VERSION = 2
 
 export interface BackupFile {
   app: typeof BACKUP_APP
@@ -14,12 +14,15 @@ export interface BackupFile {
   series: TaskSeries[]
   tasks: Task[]
   meta: MetaEntry[]
+  /** Таблицы модулей: имя таблицы → строки. В бэкапах версии 1 раздела нет. */
+  modules: Record<string, Record<string, unknown>[]>
 }
 
-export type BackupData = Pick<BackupFile, 'categories' | 'goals' | 'series' | 'tasks' | 'meta'>
+export type BackupData = Pick<BackupFile, 'categories' | 'goals' | 'series' | 'tasks' | 'meta'> &
+  Partial<Pick<BackupFile, 'modules'>>
 
 export function buildBackup(data: BackupData, now: Date = new Date()): BackupFile {
-  return { app: BACKUP_APP, version: BACKUP_VERSION, exportedAt: now.toISOString(), ...data }
+  return { app: BACKUP_APP, version: BACKUP_VERSION, exportedAt: now.toISOString(), modules: {}, ...data }
 }
 
 export function backupFileName(now: Date = new Date()): string {
@@ -54,6 +57,14 @@ export function parseBackup(text: string): BackupFile {
   for (const row of tasks) {
     if (typeof row.date !== 'string' || typeof row.status !== 'string') throw new Error(t.backup.errBrokenSection(t.backup.sectionTasks))
   }
+  const modules: BackupFile['modules'] = {}
+  if (raw.modules !== undefined) {
+    if (!isRecord(raw.modules)) throw new Error(t.backup.errBrokenSection('modules'))
+    for (const [name, value] of Object.entries(raw.modules)) {
+      if (!Array.isArray(value) || !value.every(isRecord)) throw new Error(t.backup.errBrokenSection(name))
+      modules[name] = value
+    }
+  }
   return {
     app: BACKUP_APP,
     version: raw.version,
@@ -63,6 +74,7 @@ export function parseBackup(text: string): BackupFile {
     series: rows(raw.series, t.backup.sectionSeries, 'id') as unknown as TaskSeries[],
     tasks: tasks as unknown as Task[],
     meta: rows(raw.meta ?? [], t.backup.sectionMeta, 'key') as unknown as MetaEntry[],
+    modules,
   }
 }
 

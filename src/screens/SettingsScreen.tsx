@@ -1,8 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { BottomSheet } from '../components/BottomSheet'
 import type { Theme } from '../app/theme'
-import { Button, Field, inputClass, Segmented } from '../components/fields'
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '../components/icons'
+import { Button, Field, inputClass, Segmented, Toggle } from '../components/fields'
+import {
+  CURRENCIES,
+  setCurrency,
+  setUnitSystem,
+  useCurrency,
+  useUnitSystem,
+  type Currency,
+  type UnitSystem,
+} from '../app/units'
+import { ArrowUpIcon, ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '../components/icons'
 import { deleteCategory, saveCategory } from '../db/actions'
 import { exportBackup, importBackup, markBackupDone } from '../db/backup'
 import { useLastBackupAt, type AppData } from '../db/hooks'
@@ -10,6 +19,8 @@ import { backupFileName, daysSinceBackup, parseBackup, type BackupFile } from '.
 import { PALETTE } from '../domain/palette'
 import type { Category } from '../domain/types'
 import { LANG_NAMES, t, type LangSetting } from '../i18n'
+import { MODULES } from '../modules/registry'
+import { moveModule, setModuleEnabled, useEnabledModules } from '../modules/settings'
 import { useUiStore } from '../store/uiStore'
 
 function SectionTitle({ children }: { children: string }) {
@@ -149,6 +160,40 @@ function ThemeSection() {
   )
 }
 
+function UnitsSection() {
+  const lang = useUiStore((s) => s.lang)
+  const currency = useCurrency(lang)
+  const unitSystem = useUnitSystem()
+  if (!currency || !unitSystem) return null
+  const systems: readonly { value: UnitSystem; label: string }[] = [
+    { value: 'metric', label: t.settings.unitsMetric },
+    { value: 'imperial', label: t.settings.unitsImperial },
+  ]
+  const names = new Intl.DisplayNames(t.localeTag, { type: 'currency' })
+  return (
+    <>
+      <SectionTitle>{t.settings.units}</SectionTitle>
+      <div className="rounded-xl bg-surface p-3">
+        <div className="pb-1.5 text-[13px] font-medium text-muted">{t.settings.currency}</div>
+        <select
+          aria-label={t.settings.currency}
+          className={inputClass}
+          value={currency}
+          onChange={(e) => void setCurrency(e.target.value as Currency)}
+        >
+          {CURRENCIES.map((code) => (
+            <option key={code} value={code}>
+              {code} — {names.of(code)}
+            </option>
+          ))}
+        </select>
+        <div className="pb-1.5 pt-3.5 text-[13px] font-medium text-muted">{t.settings.unitSystem}</div>
+        <Segmented options={systems} value={unitSystem} onChange={(v) => void setUnitSystem(v)} />
+      </div>
+    </>
+  )
+}
+
 function LanguageSection() {
   const setting = useUiStore((s) => s.langSetting)
   const setLangSetting = useUiStore((s) => s.setLangSetting)
@@ -173,6 +218,50 @@ function LanguageSection() {
             </option>
           ))}
         </select>
+      </div>
+    </>
+  )
+}
+
+function ModulesSection() {
+  const enabled = useEnabledModules()
+  if (!enabled) return null
+  return (
+    <>
+      <SectionTitle>{t.modules.title}</SectionTitle>
+      <div className="flex flex-col gap-2 rounded-xl bg-surface p-3">
+        {/* Включённые идут первыми, в порядке плиток на главном экране */}
+        {[...MODULES]
+          .sort((a, b) => {
+            const ia = enabled.indexOf(a.id)
+            const ib = enabled.indexOf(b.id)
+            return (ia < 0 ? Infinity : ia) - (ib < 0 ? Infinity : ib)
+          })
+          .map((m) => (
+            <div key={m.id}>
+              <div className="flex items-center gap-2">
+                <div className="min-w-0 flex-1">
+                  <Toggle
+                    checked={enabled.includes(m.id)}
+                    onChange={(on) => void setModuleEnabled(m.id, on)}
+                    label={m.title()}
+                  />
+                </div>
+                {enabled.indexOf(m.id) > 0 && (
+                  <button
+                    type="button"
+                    aria-label={t.modules.moveUp(m.title())}
+                    onClick={() => void moveModule(m.id, -1)}
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line text-accent active:opacity-60"
+                  >
+                    <ArrowUpIcon />
+                  </button>
+                )}
+              </div>
+              <p className="px-1 pt-1 text-[13px] text-muted">{m.description()}</p>
+            </div>
+          ))}
+        <p className="px-1 text-[13px] text-muted">{t.modules.settingsHint}</p>
       </div>
     </>
   )
@@ -353,9 +442,13 @@ export function SettingsScreen({ data }: { data: AppData | undefined }) {
             </button>
           </div>
 
+          <ModulesSection />
+
           <ThemeSection />
 
           <LanguageSection />
+
+          <UnitsSection />
 
           <BackupSection />
 

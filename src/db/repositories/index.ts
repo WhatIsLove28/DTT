@@ -1,0 +1,5 @@
+export { categoriesRepo } from './categories'
+export { goalsRepo } from './goals'
+export { seriesRepo } from './series'
+export { tasksRepo } from './tasks'
+export { metaRepo } from './meta'

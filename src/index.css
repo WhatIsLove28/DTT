@@ -1,0 +1,161 @@
+@import 'tailwindcss';
+
+:root {
+  color-scheme: light dark;
+  --bg: #f2f2f7;
+  --surface: #ffffff;
+  --fg: #1c1c1e;
+  --muted: #8e8e93;
+  --line: #e5e5ea;
+  --accent: #007aff;
+  --st-gray: #8e8e93;
+  --st-yellow: #e0a800;
+  --st-green: #34c759;
+  --st-red: #ff3b30;
+}
+
+/* Тёмная тема: по системной настройке, если в настройках приложения не выбрана светлая… */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #000000;
+    --surface: #1c1c1e;
+    --fg: #f2f2f7;
+    --muted: #8e8e93;
+    --line: #38383a;
+    --accent: #0a84ff;
+    --st-yellow: #ffd60a;
+    --st-green: #30d158;
+    --st-red: #ff453a;
+  }
+}
+/* …или принудительно (те же значения; см. src/app/theme.ts) */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #000000;
+  --surface: #1c1c1e;
+  --fg: #f2f2f7;
+  --muted: #8e8e93;
+  --line: #38383a;
+  --accent: #0a84ff;
+  --st-yellow: #ffd60a;
+  --st-green: #30d158;
+  --st-red: #ff453a;
+}
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+/* Цвета темы доступны как утилиты: bg-bg, bg-surface, text-fg, text-muted, border-line … */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-st-gray: var(--st-gray);
+  --color-st-yellow: var(--st-yellow);
+  --color-st-green: var(--st-green);
+  --color-st-red: var(--st-red);
+}
+
+/* +20px к вырезу: под статус-баром iOS рисует затемнение, которое иначе ложится на шапку */
+@utility pt-safe {
+  padding-top: calc(env(safe-area-inset-top) + 20px);
+}
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+@utility px-safe {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Элементы управления: без выделения текста, без двойного тап-зума и меню по долгому нажатию */
+button,
+[role='button'] {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+/* Карусель экранов: горизонтальный жест забирает Embla, вертикальная прокрутка остаётся браузеру */
+.embla__container {
+  touch-action: pan-y pinch-zoom;
+}
+
+/* Календарь выбора даты (react-day-picker) в цветах темы */
+.rdp-root {
+  --rdp-accent-color: var(--accent);
+  --rdp-accent-background-color: color-mix(in srgb, var(--accent) 15%, transparent);
+  --rdp-today-color: var(--accent);
+  --rdp-day-height: 44px;
+  --rdp-day-width: 44px;
+  --rdp-day_button-height: 42px;
+  --rdp-day_button-width: 42px;
+}
+
+/* Поля даты и времени на iOS: без системной рамки и с текстом слева */
+input[type='date'],
+input[type='time'] {
+  -webkit-appearance: none;
+  appearance: none;
+  text-align: left;
+}
+input::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+/* Линейка длительности: края растворяются, как у таймера iOS */
+.ruler-fade {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 22%, #000 78%, transparent);
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+.animate-sheet-up {
+  animation: sheet-up 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-sheet-up,
+  .animate-fade-in {
+    animation: none;
+  }
+}

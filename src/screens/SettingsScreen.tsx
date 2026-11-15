@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Diagnostics } from '../app/Diagnostics'
 import { BottomSheet } from '../components/BottomSheet'
 import type { Theme } from '../app/theme'
 import { Button, Field, inputClass, Segmented, Toggle } from '../components/fields'
@@ -397,6 +398,7 @@ function BackupSection() {
 export function SettingsScreen({ data }: { data: AppData | undefined }) {
   const closeSettings = useUiStore((s) => s.closeSettings)
   const [editing, setEditing] = useState<{ category?: Category } | null>(null)
+  const [diagnostics, setDiagnostics] = useState(false)
 
   return (
     <div className="animate-fade-in px-safe fixed inset-0 z-40 flex flex-col bg-bg text-fg">
@@ -452,7 +454,16 @@ export function SettingsScreen({ data }: { data: AppData | undefined }) {
 
           <BackupSection />
 
-          <p className="pb-safe px-1 pt-5 text-center text-[12px] text-muted">{t.app.version(__APP_VERSION__)}</p>
+          {/* Тап по версии показывает служебные сведения об экране */}
+          <button
+            type="button"
+            onClick={() => setDiagnostics((on) => !on)}
+            className="w-full px-1 pt-5 text-center text-[12px] text-muted"
+          >
+            {t.app.version(__APP_VERSION__)}
+          </button>
+          {diagnostics && <Diagnostics />}
+          <div className="pb-safe" />
           <div className="h-4" />
 
           <BottomSheet

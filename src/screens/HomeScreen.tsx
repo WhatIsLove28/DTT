@@ -175,10 +175,13 @@ export function HomeScreen({ data }: { data: AppData | undefined }) {
               ))}
             </div>
           )}
-
-          <ModuleTiles />
         </div>
       )}
+
+      {/* Плитки модулей прижаты к нижнему краю; цели и задачи прокручиваются над ними */}
+      <div className="pb-screen shrink-0 px-3">
+        <ModuleTiles />
+      </div>
     </div>
   )
 }

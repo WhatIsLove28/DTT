@@ -21,8 +21,6 @@ export const ru = {
 
   app: {
     name: 'Трекер',
-    screensNav: 'Экраны',
-    screens: ['Главный экран', 'Неделя'],
     version: (v: string) => `Трекер · версия ${v}`,
     newVersion: 'Доступна новая версия',
     update: 'Обновить',

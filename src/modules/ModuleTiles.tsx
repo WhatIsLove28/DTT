@@ -3,7 +3,7 @@ import { useUiStore } from '../store/uiStore'
 import { moduleById } from './registry'
 import { useEnabledModules } from './settings'
 
-/** Раздел «Модули» на главном экране: плитки по две в ряд, нечётная последняя — на всю ширину */
+/** Плитки модулей у нижнего края главного экрана: по две в ряд, нечётная последняя — на всю ширину */
 export function ModuleTiles() {
   const enabled = useEnabledModules()
   const openModule = useUiStore((s) => s.openModule)
@@ -11,8 +11,7 @@ export function ModuleTiles() {
   if (modules.length === 0) return null
 
   return (
-    <>
-      <h2 className="px-1 pb-1.5 pt-5 text-[13px] font-semibold uppercase tracking-wide text-muted">{t.modules.title}</h2>
+    <section aria-label={t.modules.title} className="border-t border-line pt-2">
       <div className="grid grid-cols-2 gap-2">
         {modules.map(({ id, Tile }, i) => (
           <Tile
@@ -22,6 +21,6 @@ export function ModuleTiles() {
           />
         ))}
       </div>
-    </>
+    </section>
   )
 }

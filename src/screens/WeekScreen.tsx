@@ -57,7 +57,7 @@ function WeekGrid({
 }) {
   const dates = weekDates(weekStart)
   return (
-    <div className="flex min-h-0 flex-1 flex-col px-1.5 pb-2">
+    <div className="pb-screen flex min-h-0 flex-1 flex-col px-1.5">
       <div className="grid shrink-0 grid-cols-7 gap-0.5">
         {dates.map((d) => {
           const isToday = d === today
@@ -182,7 +182,7 @@ function DayView({ data, today, date, tasks, onOpen }: ViewProps & { date: ISODa
         )}
       </div>
 
-      <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto pb-3 pt-2">
+      <div ref={scroller} className="pb-screen min-h-0 flex-1 overflow-y-auto pt-2">
         <div className="relative" style={{ height: 24 * HOUR_PX }}>
           {Array.from({ length: 24 }, (_, h) => (
             <div key={h} className="absolute inset-x-0 flex items-start" style={{ top: h * HOUR_PX }}>

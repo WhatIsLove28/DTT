@@ -20,8 +20,6 @@ export type Sheet =
 export type WeekViewMode = 'week' | 'day'
 
 interface UiState {
-  /** 0 — главный экран, 1 — экран недели */
-  screenIndex: number
   settingsOpen: boolean
   /** Модуль, открытый на весь экран */
   moduleOpen: ModuleId | null
@@ -42,7 +40,6 @@ interface UiState {
   /** Язык, на котором сейчас показан интерфейс; смена перерисовывает приложение */
   lang: Lang
   setLangSetting: (setting: LangSetting) => void
-  setScreenIndex: (index: number) => void
   openSettings: () => void
   closeSettings: () => void
   setToday: (today: ISODate) => void
@@ -60,7 +57,6 @@ const initialLang = resolveLang(initialLangSetting)
 setLang(initialLang)
 
 export const useUiStore = create<UiState>((set) => ({
-  screenIndex: 0,
   settingsOpen: false,
   today: initialToday,
   viewMode: 'week',
@@ -74,7 +70,6 @@ export const useUiStore = create<UiState>((set) => ({
   langSetting: initialLangSetting,
   lang: initialLang,
   setLangSetting: (langSetting) => set({ langSetting, lang: saveLangSetting(langSetting) }),
-  setScreenIndex: (screenIndex) => set({ screenIndex }),
   openSettings: () => set({ settingsOpen: true }),
   closeSettings: () => set({ settingsOpen: false }),
   moduleOpen: null,

@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './App'
+import { watchViewportGap } from './app/viewportGap'
 import { ensureDefaults } from './db/actions'
 import { runSync } from './db/sync'
 import './index.css'
@@ -18,6 +19,8 @@ prepareData().catch((error) => console.error('Не удалось подгото
 
 // Просим систему не вычищать базу при нехватке места. Отказ не ошибка: от потери данных страхует бэкап.
 void navigator.storage?.persist?.().catch(() => false)
+
+watchViewportGap()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

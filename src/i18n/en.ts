@@ -20,8 +20,6 @@ export const en: Dict = {
 
   app: {
     name: 'Tracker',
-    screensNav: 'Screens',
-    screens: ['Home', 'Week'],
     version: (v) => `Tracker · version ${v}`,
     newVersion: 'A new version is available',
     update: 'Update',

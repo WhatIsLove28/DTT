@@ -35,16 +35,16 @@ export function ShoppingTile({ wide, onOpen }: { wide: boolean; onOpen: () => vo
     <button
       type="button"
       onClick={() => onOpen()}
-      className="flex min-w-0 flex-col rounded-xl bg-surface p-3 text-left active:opacity-70"
+      className="flex min-w-0 flex-col justify-center rounded-xl bg-surface py-2.5 pl-3 pr-2.5 text-left active:opacity-70"
     >
-      <span className="flex items-center gap-1.5 text-[13px] text-muted">
-        <span className="flex scale-75 text-accent">
+      <span className="flex items-center gap-1 text-[13px] text-muted">
+        <span className="-ml-1 flex scale-[0.65] text-accent">
           <CartIcon />
         </span>
         {t.shopping.title}
       </span>
-      <span className="pt-1 text-[24px] font-semibold tabular-nums leading-tight">{todo.length}</span>
-      <span className="w-full truncate text-[13px] text-muted">{names || t.shopping.tileEmpty}</span>
+      <span className="text-[19px] font-semibold tabular-nums leading-tight">{todo.length}</span>
+      <span className="w-full truncate text-[12px] text-muted">{names || t.shopping.tileEmpty}</span>
     </button>
   )
 }

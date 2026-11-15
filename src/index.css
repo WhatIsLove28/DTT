@@ -69,6 +69,13 @@
     display: none;
   }
 }
+/* Нижний отступ главных экранов: содержимое доходит до края дисплея, а последний элемент
+   не прячется под системной полоской жеста */
+@utility pb-screen {
+  /* --viewport-gap > 0 — ошибка iOS: окно короче дисплея, и полоска жеста лежит уже за его
+     пределами. Тогда отступ под неё не нужен (см. src/app/viewportGap.ts). */
+  padding-bottom: max(calc(env(safe-area-inset-bottom) + 12px - var(--viewport-gap, 0px)), 8px);
+}
 @utility pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
 }

@@ -1,4 +1,4 @@
-import { BarbellIcon } from '../../components/icons'
+import { BarbellIcon, PlayIcon } from '../../components/icons'
 import { weekStartOf } from '../../domain/dates'
 import { t } from '../../i18n'
 import { useUiStore } from '../../store/uiStore'
@@ -15,15 +15,16 @@ export function WorkoutsTile({ wide, onOpen }: { wide: boolean; onOpen: (intent?
   const startButton = (
     <button
       type="button"
+      aria-label={active ? t.workouts.continue : t.workouts.start}
       onClick={(e) => {
         e.stopPropagation()
         onOpen('start')
       }}
-      className={`flex h-9 shrink-0 items-center justify-center rounded-lg bg-accent/12 px-3 text-[14px] font-semibold text-accent active:opacity-60 ${
-        wide ? '' : 'mt-2.5 w-full'
+      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full active:opacity-60 ${
+        active ? 'bg-accent text-white' : 'bg-accent/12 text-accent'
       }`}
     >
-      {active ? t.workouts.continueShort : t.workouts.startShort}
+      <PlayIcon />
     </button>
   )
 
@@ -35,35 +36,30 @@ export function WorkoutsTile({ wide, onOpen }: { wide: boolean; onOpen: (intent?
       onKeyDown={(e) => {
         if (e.key === 'Enter') onOpen()
       }}
-      className={`flex min-w-0 rounded-xl bg-surface text-left active:opacity-80 ${
-        wide ? 'col-span-2 items-center gap-3 py-2 pl-4 pr-2' : 'flex-col p-3'
+      className={`flex min-w-0 items-center gap-2 rounded-xl bg-surface text-left active:opacity-80 ${
+        wide ? 'col-span-2 min-h-14 py-2 pl-4 pr-2.5' : 'py-2.5 pl-3 pr-2.5'
       }`}
     >
-      {wide ? (
-        <>
-          <span className="shrink-0 text-accent">
-            <BarbellIcon />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-[13px] text-muted">{t.workouts.title}</span>
-            <span className="block truncate text-[16px]">{t.workouts.tileWeek(count)}</span>
-          </span>
-          {startButton}
-        </>
-      ) : (
-        <>
-          <span className="flex items-center gap-1.5 text-[13px] text-muted">
-            <span className="flex scale-75 text-accent">
+      {wide && (
+        <span className="shrink-0 pr-1 text-accent">
+          <BarbellIcon />
+        </span>
+      )}
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-1 text-[13px] text-muted">
+          {!wide && (
+            <span className="-ml-1 flex scale-[0.65] text-accent">
               <BarbellIcon />
             </span>
-            {t.workouts.title}
-          </span>
-          <span className="pt-1 text-[22px] font-semibold tabular-nums leading-tight">{count}</span>
-          <span className="truncate text-[13px] text-muted">{t.workouts.thisWeekShort}</span>
-          <span className="flex-1" />
-          {startButton}
-        </>
-      )}
+          )}
+          {t.workouts.title}
+        </span>
+        <span className="block truncate text-[19px] font-semibold tabular-nums leading-tight">{count}</span>
+        <span className="block truncate text-[12px] text-muted">
+          {active ? t.workouts.activeTitle : t.workouts.thisWeekShort}
+        </span>
+      </span>
+      {startButton}
     </div>
   )
 }

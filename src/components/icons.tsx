@@ -98,6 +98,14 @@ export function BarbellIcon() {
   )
 }
 
+export function PlayIcon() {
+  return (
+    <svg {...base} width={18} height={18} fill="currentColor" stroke="none">
+      <path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z" />
+    </svg>
+  )
+}
+
 export function DotsIcon() {
   return (
     <svg {...base} fill="currentColor" stroke="none">
